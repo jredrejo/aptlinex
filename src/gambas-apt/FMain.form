@@ -1,0 +1,41 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  Move(24,14,518,147)
+  #(Scaled) = False
+  Text = ("AptLinex")
+  Icon = Picture["synaptic.png"]
+  Persistent = True
+  Border = Window.Fixed
+  Arrangement = Arrange.Fill
+  { VBox1 VBox
+    Move(0,7,511,133)
+    Expand = True
+    Spacing = 5
+    Padding = 5
+    { LblInfo TextLabel
+      Move(21,7,322,21)
+      Expand = True
+      Text = ("")
+      Alignment = Align.Center
+    }
+    { PBar ProgressBar
+      Move(7,35,336,49)
+    }
+    { HBox1 HBox
+      Move(21,91,357,35)
+      { Label1 Label
+        Move(21,7,140,14)
+        Expand = True
+        Text = ("")
+      }
+      { Button1 Button
+        Move(238,0,112,21)
+        Enabled = False
+        ToolTip = ("Press here to cancel the installation")
+        Text = ("Cancel")
+        Cancel = True
+      }
+    }
+  }
+}

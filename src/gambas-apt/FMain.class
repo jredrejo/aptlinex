@@ -1,0 +1,183 @@
+' Gambas class file
+'**************************************************************************
+' Copyright (c) 2006 Junta de Extremadura
+'   Consejería de Infraestructuras y Desarrollo Tecnológico
+'                   
+' Programmed by: Daniel Campos Fernández <dcamposf@gmail.com>
+' and José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>
+'
+' This program IS free software; you can redistribute it AND/OR
+' modify it under the terms of the GNU General PUBLIC License AS
+' published by the Free Software Foundation; either version 2 of the
+' License, OR (at your option) any later version.
+' 
+' This program IS distributed IN the hope that it will be useful, but
+' IS provided AS IS, WITHOUT ANY WARRANTY; without even the implied
+' warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+' NON-INFRINGEMENT.  See the GNU General PUBLIC License FOR more details.
+' 
+' You should READ the GNU General PUBLIC License
+' IF you have non, WRITE TO the Free Software
+' Foundation, INC., 51 Franklin St, Fifth Floor, Boston,
+' MA 02111-1301, USA.
+'**************************************************************************
+PUBLIC Genuser AS String
+PUBLIC hProc AS Process
+PUBLIC Errors AS NEW String[]
+PUBLIC bErr AS Boolean
+PUBLIC Programa AS String
+PUBLIC NoInfo AS Boolean
+PUBLIC bUpdate AS Boolean
+PUBLIC InitCad AS String 
+
+PUBLIC SUB Process_Read()
+
+  DIM Buf AS String
+  DIM Vl AS Integer
+
+  LINE INPUT #hProc, Buf
+
+  IF NoInfo = TRUE THEN RETURN
+
+  IF bErr = TRUE THEN
+    Errors.Add(Buf)
+    RETURN
+  END IF
+
+  IF Left(Buf, 2) = "E:" THEN
+    IF Trim(Buf) = "E:" THEN
+      bErr = TRUE
+    ELSE
+      IF InStr(Buf, ("Some index files failed to download,")) = 0 THEN Errors.Add(Trim(Mid(Buf, 3)))
+    END IF
+    RETURN
+  END IF
+
+  IF Left(Buf, 2) = "W:" THEN RETURN
+
+  IF InStr(Buf, "%") > 0 THEN
+    TRY Vl = Val(Left(Buf, InStr(Buf, "%") - 1))
+    IF NOT ERROR THEN PBar.Value = Vl / 100
+    RETURN
+  END IF
+
+  Buf = Trim(Buf)
+
+  IF Left(Buf, 4) = "Obj " THEN
+    LblInfo.Text = ("Updating:<br>") & Mid(Buf, 5)
+    RETURN
+  END IF
+
+  IF Left(Buf, 4) = "Des:" THEN
+    LblInfo.Text = ("Downloading:<br>") & Mid(Buf, 5)
+    RETURN
+  END IF
+
+  LblInfo.Text = Trim(Buf)
+
+END
+
+PUBLIC SUB Process_Kill()
+
+  DIM Buf AS String
+  DIM sTmp AS String
+  DIM sProc AS String
+
+  IF NoInfo = TRUE THEN RETURN
+
+  IF Errors.Count > 0 THEN
+    LblInfo.Text = "Process finished"
+    Buf = ("I'm sorry,<br>")
+    Buf = Buf & ("There were errors in the installation:<p>")
+    FOR EACH sTmp IN Errors
+      IF InStr(LCase(sTmp), "unable to lock the administration") > 0 THEN
+        NoInfo = TRUE
+        SHELL "ps -le" TO sProc
+        IF InStr(LCase(sProc), "synaptic") > 0 THEN
+          Buf = Buf & ("Synaptic is running.")
+        ELSE IF InStr(LCase(sProc), "aptitude") > 0 THEN
+          Buf = Buf & ("Aptitude is running.")
+        ELSE IF InStr(LCase(sProc), "apt-get") > 0 THEN
+          Buf = Buf & ("apt-get is running.")
+        ELSE
+          Buf = Buf & ("Another process is using apt resources")
+        END IF
+        Message.Error(Buf & ("<br>Please close it before running this program"))
+        QUIT
+      END IF
+    NEXT
+
+    FOR EACH sTmp IN Errors
+      Buf = Buf & sTmp & "<br>"
+    NEXT
+    Message.Error(Buf)
+    QUIT
+
+  END IF
+
+  IF bUpdate = FALSE THEN
+    bUpdate = TRUE
+    hProc = SHELL (InitCad & "apt-get update && apt-get -f install") FOR INPUT
+    RETURN
+  END IF
+
+  IF Programa = "" THEN
+    LblInfo.Text = "Process finished"
+      Message.Info(("Installation process has been finished.<br>All seems to be OK."))
+      QUIT
+  ELSE
+      hProc = SHELL (InitCad & " apt-get -c /usr/share/aptlinex/apt.conf.autoinstall -y --force-yes --reinstall install " & Programa & " && apt-get -f install") FOR INPUT
+      Programa = ""
+  END IF
+
+END
+
+
+
+PUBLIC SUB Run(sName AS String, sUser AS String)
+DIM thisDesktop AS String
+  ME.Show
+  ME.Center
+  ME.Raise
+  GenUser = sUser
+  Programa = sName
+  IF ModMain.isThisKDE() THEN 
+    thisDesktop = "kde"
+  ELSE 
+    thisDesktop = "gnome" 
+  ENDIF 
+  LblInfo.Text = ("Preparing tasks...")
+  InitCad = "export DEBIAN_FRONTEND=" & thisDesktop & " && export DEBIAN_PRIORITY=critical && "
+  hProc = SHELL (InitCad & "apt-get -y --force-yes -f install") FOR INPUT
+  Button1.Enabled = TRUE
+
+
+END
+
+
+
+
+PUBLIC SUB Button1_Click()
+
+  NoInfo = TRUE
+  TRY hProc.Kill()
+  Message.Info(("Process cancelled"))
+  ME.Close()
+  QUIT
+
+END
+
+
+PUBLIC SUB Form_Close()
+
+  STOP EVENT
+
+END
+
+PUBLIC SUB Form_Open()
+
+  Button1.Picture = Picture["cancel.png"]
+  ME.Resize(600, 178)
+  ME.Move((Desktop.Width - ME.W) / 2, (Desktop.Height - ME.H) / 2)
+
+END

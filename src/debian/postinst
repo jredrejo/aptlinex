@@ -1,0 +1,46 @@
+#!/bin/sh
+set -e
+
+
+case "$1" in
+    configure)
+
+     #register in Iceweasel:
+     if [ -e  /usr/lib/iceweasel/iceweasel.cfg ]; then
+     	ICEWEASEL=`grep "handler.app.apt" /usr/lib/iceweasel/iceweasel.cfg ||true`
+	 	if [ -z "$ICEWEASEL" ]; then
+			echo "lockPref(\"network.protocol-handler.app.apt\",\"/usr/bin/gambas-apt.gambas\");
+lockPref(\"network.protocol-handler.warn-external.apt\", false);" >> /usr/lib/iceweasel/iceweasel.cfg
+	 	fi
+	 fi
+
+     #register in Firefox:
+     if [ -e  /usr/lib/firefox/firefox.cfg ]; then
+     	FIREFOX=`grep handler.app.apt /usr/lib/firefox/firefox.cfg ||true`
+	 	if [ -z "$FIREFOX" ]; then
+			echo "lockPref(\"network.protocol-handler.app.apt\",\"/usr/bin/gambas-apt.gambas\");
+lockPref(\"network.protocol-handler.warn-external.apt\", false);" >> /usr/lib/firefox/firefox.cfg
+	 	fi
+	 fi
+	
+     #Gnome integration (for galeon & epiphany):
+	 if which gconf-schemas >/dev/null 2>&1; then
+		gconf-schemas --register aptlinex.schemas
+	 fi
+
+	 ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+
+

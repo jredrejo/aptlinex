@@ -1,0 +1,90 @@
+' Gambas class file
+'**************************************************************************
+' Copyright (c) 2006 Junta de Extremadura
+'   Consejería de Infraestructuras y Desarrollo Tecnológico
+'                   
+' Programmed by: Daniel Campos Fernández <dcamposf@gmail.com>
+'
+' This program IS free software; you can redistribute it AND/OR
+' modify it under the terms of the GNU General PUBLIC License AS
+' published by the Free Software Foundation; either version 2 of the
+' License, OR (at your option) any later version.
+' 
+' This program IS distributed IN the hope that it will be useful, but
+' IS provided AS IS, WITHOUT ANY WARRANTY; without even the implied
+' warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+' NON-INFRINGEMENT.  See the GNU General PUBLIC License FOR more details.
+' 
+' You should READ the GNU General PUBLIC License
+' IF you have non, WRITE TO the Free Software
+' Foundation, INC., 51 Franklin St, Fifth Floor, Boston,
+' MA 02111-1301, USA.
+'**************************************************************************
+PUBLIC pIcon AS String
+PUBLIC pName AS String
+PUBLIC pTitle AS String
+PUBLIC GenUser AS String
+
+PUBLIC SUB Run(sTitle AS String, sName AS String, sIcon AS String, sUser AS String)
+
+  DIM hImg AS NEW Image
+
+  pTitle = sTitle
+  pIcon = sIcon
+  pName = sName
+  GenUser = sUser
+
+  LblInfo.Text = pTitle
+  
+  IF Left(sIcon, 1) = "/" THEN
+    TRY hImg.Load(sIcon)
+    IF NOT ERROR THEN
+      TRY PBox.Picture = Picture.Load(sIcon)               
+    ELSE 
+      pbox.Visible = FALSE
+      CheckBox1.Visible = FALSE
+    END IF
+  END IF
+
+  ME.Show()
+  
+END
+
+
+PUBLIC SUB Form_Show()
+
+  ME.Resize(300, 130)
+  ME.Move((Desktop.W - ME.W) / 2, (Desktop.H - ME.H) / 2)
+
+END
+
+PUBLIC SUB Button1_Click()
+
+  DIM sBuf AS String
+
+  IF CheckBox1.Visible = TRUE THEN
+    IF CheckBox1.Value = TRUE THEN
+      sBuf = "[Desktop Entry]\n"
+      sBuf = sBuf & "Type=Application\n"
+      sBuf = sBuf & "Name=" & pTitle & "\n"
+      sBuf = sBuf & "Exec=" & pName & "\n"
+      sBuf = sBuf & "Icon=" & pIcon & "\n"
+      TRY File.Save("/home" &/ GenUser &/ "Desktop" &/ pTitle & ".desktop", sBuf)
+      TRY SHELL "chown " & GenUser & ".users /home" &/ GenUser &/ "Desktop" &/ pTitle & ".desktop WAIT"
+    END IF
+  END IF
+
+  IF CheckBox2.Value THEN TRY EXEC [pName] 
+
+  QUIT
+
+END
+
+
+
+PUBLIC SUB Form_Close()
+
+  STOP EVENT  
+  ME.Show()
+
+END

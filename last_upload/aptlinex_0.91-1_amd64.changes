@@ -1,0 +1,47 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.8
+Date: Sat, 19 Apr 2008 14:27:58 +0200
+Source: aptlinex
+Binary: aptlinex
+Architecture: source all
+Version: 0.91-1
+Distribution: unstable
+Urgency: high
+Maintainer: José L. Redrejo Rodríguez <jredrejo@debian.org>
+Changed-By: José L. Redrejo Rodríguez <jredrejo@debian.org>
+Description: 
+ aptlinex   - Web browser addon to install Debian packages with a click
+Closes: 476572 476588 476590
+Changes: 
+ aptlinex (0.91-1) unstable; urgency=high
+ .
+   * New upstream release to fix several security bugs:
+   * Check if the package really exists before acting (Closes: #476572)
+   * Always uses Temp$() when creating temp files (Closes: #476588)
+   * It does not use lock files anymore
+   * Now apt:foo uris are also accepted (Closes: #476590)
+Checksums-Sha1: 
+ 1d194fdbf3f56deddaaaa82f3fb2f1ff3ac92303 1000 aptlinex_0.91-1.dsc
+ 1f18a5e163d471559ad66e2c40f42b429dc11a8b 78048 aptlinex_0.91.orig.tar.gz
+ cc6ee09ee8f39270080d32042ca40de8f7e39e9b 4126 aptlinex_0.91-1.diff.gz
+ 1525109c15e3a466123039761c44b559c58f2def 17902 aptlinex_0.91-1_all.deb
+Checksums-Sha256: 
+ 99831c21bdd02431baff6347b1734132ec7fdbee21017834c40404a2e781f215 1000 aptlinex_0.91-1.dsc
+ eaa0b6f66a97860796737f02a33a05510d61b20a52fba6c466fb684d2348c172 78048 aptlinex_0.91.orig.tar.gz
+ a73a755806c5d1ee519a403471bd4e3a0cc1734cea0f961d921827324eac71fb 4126 aptlinex_0.91-1.diff.gz
+ d83678846ce02b22919ecd1ff96415a5c2fc2fd8f9f022219ad3a4d553f8ce2d 17902 aptlinex_0.91-1_all.deb
+Files: 
+ 66a0643d4ccc7a5298400199566497c3 1000 utils optional aptlinex_0.91-1.dsc
+ 0268d5163b1d29e2840fdd6322958aa5 78048 utils optional aptlinex_0.91.orig.tar.gz
+ 3294ee576f5a8ab3673c2411c3ba9fdb 4126 utils optional aptlinex_0.91-1.diff.gz
+ 9fa3738eb3233e3018c203a97830588b 17902 utils optional aptlinex_0.91-1_all.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFICedqmqVR2WapDeIRAqpiAJ4wrq4VVVzgQaj6MpEs3gdi8qWkPgCfXZ8U
+rSSgBgLQpVceqiF41bvsCcw=
+=hWQx
+-----END PGP SIGNATURE-----

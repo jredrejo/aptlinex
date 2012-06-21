@@ -1,0 +1,24 @@
+Source: aptlinex
+Section: utils
+Priority: optional
+Maintainer: José L. Redrejo Rodríguez <jredrejo@debian.org>
+Build-Depends: debhelper (>= 5), autotools-dev, gambas2-gb-gui (>= 2.0), gambas2-dev
+Standards-Version: 3.7.3
+
+Package: aptlinex
+Architecture: all
+Depends: gambas2-gb-gui (>= 2.0), gambas2-runtime, gksu | kdebase-bin, apt-show-versions
+Recommends: www-browser
+Suggests: iceweasel | konqueror | gnome-www-browser, gconf2
+Description: Web browser addon to install Debian packages with a click
+ This addon allows installing Debian packages from iceweasel, firefox,
+ galeon or konqueror just clicking on a web link.
+ .
+ For this to work, links need to have an url beginning with apt://
+ This package does not install the packages or download them from the
+ web sites, it just launches apt, passing the package name to install
+ as a parameter to apt.
+ .
+ Some screenshots to see how it works are available at
+ http://gambas.gnulinex.org/linexapt/
+

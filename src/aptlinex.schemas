@@ -1,0 +1,51 @@
+<gconfschemafile>
+  <schemalist>
+    <schema>
+     <key>/schemas/desktop/gnome/url-handlers/apt/enabled</key>       
+     <applyto>/desktop/gnome/url-handlers/apt/enabled</applyto>
+     <owner>aptlinex</owner>
+     <type>bool</type>
+     <default>true</default>
+     <locale name="C">
+       <short>How to handle apt URLs</short>
+       <long>Set to true to have a program specified in command handle apt URLs</long>
+     </locale>
+     <locale name="es">
+       <short>Cómo manipular las URLs apt</short>
+       <long>Establecer a «true» para tener un programa especificado en el comando para manipular las URLs apt</long>
+     </locale>
+   </schema>
+
+   <schema>
+     <key>/schemas/desktop/gnome/url-handlers/apt/command</key>
+     <applyto>/desktop/gnome/url-handlers/apt/command</applyto>
+     <owner>aptlinex</owner>
+     <type>string</type>
+     <default>/usr/bin/gambas-apt.gambas %s</default>
+     <locale name="C">
+       <short>URL handler for apt uris</short>
+       <long>URL handler for apt uris</long>
+     </locale>
+     <locale name="es">
+       <short>Manipulador URL para uris apt</short>
+       <long>Manipulador URL para uris apt</long>
+     </locale>
+    </schema>
+
+   <schema>
+     <key>/schemas/desktop/gnome/url-handlers/apt/need-terminal</key>
+     <applyto>/desktop/gnome/url-handlers/apt/need-terminal</applyto>
+     <owner>aptlinex</owner>
+     <type>bool</type>
+     <default>false</default>
+     <locale name="C">
+       <short>Run program in terminal</short>
+       <long>True if the program to handle this URL should be run in a terminal</long>
+     </locale>
+     <locale name="es">
+       <short>Ejecutar programa en un terminal</short>
+       <long>«True» si el programa para manipular esta URL debería ejecutarse en un terminal</long>
+     </locale>
+   </schema>                    
+  </schemalist>
+</gconfschemafile>

@@ -1,0 +1,41 @@
+#!/bin/sh
+set -e
+
+
+case "$1" in
+    remove|upgrade|deconfigure)
+        tempfile=$(mktemp -p /tmp aptlinex.XXXXXXXX)
+    	#unregister Iceweasel
+    	if [ -e /usr/lib/iceweasel/iceweasel.cfg ]; then
+    		grep -v apt.gambas /usr/lib/iceweasel/iceweasel.cfg|grep -v external.apt >$tempfile
+			rm -f /usr/lib/iceweasel/iceweasel.cfg
+			mv $tempfile /usr/lib/iceweasel/iceweasel.cfg 
+			chmod 644 /usr/lib/iceweasel/iceweasel.cfg
+		fi 
+    	#unregister Firefox
+    	if [ -e /usr/lib/firefox/firefox.cfg ]; then
+    		grep -v apt.gambas /usr/lib/firefox/firefox.cfg|grep -v external.apt >$tempfile
+			rm -f /usr/lib/firefox/firefox.cfg
+			mv $tempfile /usr/lib/firefox/firefox.cfg
+			chmod 644  /usr/lib/firefox/firefox.cfg
+		fi
+		#unregister Gnome integration
+		if which gconf-schemas >/dev/null 2>&1; then
+			gconf-schemas --unregister aptlinex.schemas
+		fi
+    ;;
+
+    failed-upgrade)
+    ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+
+

@@ -1,0 +1,10 @@
+# Gambas Project File 2.0
+Title=APT simple frontend
+Startup=ModMain
+Icon=synaptic.png
+Version=1.7.12
+Library=gb.gui
+Arguments="geany"
+TabSize=2
+Translate=1
+Language=es

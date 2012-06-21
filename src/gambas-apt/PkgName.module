@@ -1,0 +1,34 @@
+' Gambas module file
+'**************************************************************************
+' Copyright (c) 2006 Junta de Extremadura
+'   Consejería de Infraestructuras y Desarrollo Tecnológico
+'                   
+' Programmed by: Daniel Campos Fernández <dcamposf@gmail.com>
+' and José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>
+'
+' This program IS free software; you can redistribute it AND/OR
+' modify it under the terms of the GNU General PUBLIC License AS
+' published by the Free Software Foundation; either version 2 of the
+' License, OR (at your option) any later version.
+' 
+' This program IS distributed IN the hope that it will be useful, but
+' IS provided AS IS, WITHOUT ANY WARRANTY; without even the implied
+' warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+' NON-INFRINGEMENT.  See the GNU General PUBLIC License FOR more details.
+' 
+' You should READ the GNU General PUBLIC License
+' IF you have non, WRITE TO the Free Software
+' Foundation, INC., 51 Franklin St, Fifth Floor, Boston,
+' MA 02111-1301, USA.
+'**************************************************************************
+
+'**************************************************************************
+' Checks a package name to know if it really exists
+'***************************************************************************
+PUBLIC FUNCTION Check(sName AS String) AS Boolean
+DIM tmProc AS Process  
+  tmProc = SHELL "apt-cache show " & sName WAIT 
+  RETURN (tmProc.Value = 0)  
+END
+
+

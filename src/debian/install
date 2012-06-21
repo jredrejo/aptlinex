@@ -1,0 +1,3 @@
+aptlinex.protocol usr/share/services
+aptlinex.schemas usr/share/gconf/schemas
+apt.conf.autoinstall usr/share/aptlinex

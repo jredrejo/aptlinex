@@ -1,0 +1,239 @@
+' Gambas module file
+'**************************************************************************
+' Copyright (c) 2006 Junta de Extremadura
+'   Consejería de Infraestructuras y Desarrollo Tecnológico
+'                   
+' Programmed by: Daniel Campos Fernández <dcamposf@gmail.com>
+' and José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>
+'
+' This program IS free software; you can redistribute it AND/OR
+' modify it under the terms of the GNU General PUBLIC License AS
+' published by the Free Software Foundation; either version 2 of the
+' License, OR (at your option) any later version.
+' 
+' This program IS distributed IN the hope that it will be useful, but
+' IS provided AS IS, WITHOUT ANY WARRANTY; without even the implied
+' warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+' NON-INFRINGEMENT.  See the GNU General PUBLIC License FOR more details.
+' 
+' You should READ the GNU General PUBLIC License
+' IF you have non, WRITE TO the Free Software
+' Foundation, INC., 51 Franklin St, Fifth Floor, Boston,
+' MA 02111-1301, USA.
+'**************************************************************************
+PUBLIC GenUser AS String
+
+PRIVATE FUNCTION CheckPackageExists(Buf AS String) AS Boolean
+
+  DIM sBuf AS String
+  SHELL "apt-show-versions " & Buf & " |grep uptodate" TO SBuf
+  RETURN (sbuf <> "")
+
+END
+
+
+PUBLIC SUB Main()
+
+  DIM Buf AS String
+  DIM bOk AS Boolean
+  DIM NoInt AS Boolean
+  
+  DIM sExec AS String
+  DIM sProc AS String
+  DIM nProc AS String
+  DIM aProc AS String[]
+
+
+  IF isAlreadyRunning("gambas-apt") THEN 
+    Message.Error(("<b>AptLinex is already running. Please wait until it finishes.</b>"))
+    QUIT
+  END IF
+
+  IF Application.Args.Count = 3 THEN
+    GenUser = Application.Args[1]
+    Buf = Trim(Application.Args[2])
+    IF PkgName.Check(Buf) = FALSE THEN 
+      Message.Error(("Invalid package name"))
+      QUIT 
+    END IF
+    bOK = TRUE
+    NoInt = TRUE
+  END IF
+
+  IF GenUser = "" THEN GenUser = "root"
+
+  IF bOK = FALSE THEN
+    IF Application.Args.Count <> 2 THEN
+      Message.Error(("Usage: gambas-apt package-name"))
+      RETURN
+    ELSE
+      Buf = Trim(Application.Args[1])
+      IF Left$(Buf, 6) = "apt://" THEN
+        Buf = Trim$(Mid$(Buf, 7))
+      ELSE 
+        IF Left$(Buf, 4) = "apt:" THEN Buf = Trim$(Mid$(Buf, 5))
+      ENDIF 
+      IF NOT PkgName.Check(Buf) THEN 
+        Message.Error(("Invalid package name"))
+        QUIT 
+      END IF
+    END IF
+  END IF
+
+  IF NoInt = FALSE THEN
+    IF CheckPackageExists(Buf) THEN
+      IF Message.Question(("Selected package is already installed. Do you want to reinstall it?"), ("Yes"), ("No")) <> 1 THEN QUIT
+    ELSE 
+      IF Message.Question(("I'm going to download<br> and install<br>this package:<p> ") & Buf & ("<p>Is Ok?"), ("Yes"), ("No")) <> 1 THEN
+        Message.Info(("Process cancelled"))
+        QUIT
+      END IF
+    ENDIF 
+  END IF
+
+  WAIT 1
+
+  IF User.Name <> "root" THEN
+    SHELL graphicalSu() & " gambas-apt.gambas " & user.Name & " " & Buf WAIT
+    PostInstall(Buf)
+    RETURN
+  END IF
+
+  FMain.Run(Buf, GenUser)
+
+END
+
+PRIVATE FUNCTION isAlreadyRunning(anApp AS String) AS Boolean
+  
+  DIM result AS String
+  
+  SHELL "ps -FU " & User.Name & "|grep " & anApp & "|grep -v grep|grep -v gksu|grep -v \" " & Application.id & " \"" TO result
+  RETURN (Trim$(result) <> "")
+
+END
+
+PUBLIC FUNCTION isThisKDE() AS Boolean
+  DIM result AS String 
+  
+  SHELL "echo $KDE_FULL_SESSION" TO result
+  RETURN (Trim$(result) <> "")
+  
+END
+
+PRIVATE FUNCTION graphicalSu() AS String
+  DIM kdesu AS Boolean
+  
+  kdesu = (isThisKDE() OR NOT Exist("/usr/bin/gksu"))  
+  IF kdesu THEN  
+    RETURN "export GB_GUI=gb.qt;kdesu -t -d"
+  ELSE 
+    RETURN "gksu"
+  ENDIF   
+
+END
+
+
+PRIVATE FUNCTION PostInstall(packageName AS String) AS Boolean
+
+  DIM sBuf AS String
+  DIM sCad AS String[]
+  DIM sTitle AS String
+  DIM sIcon AS String
+  DIM sTemp AS String
+
+  sTemp = Temp$()
+  TRY SHELL "dpkg -L " & packageName & " | grep .desktop > " & sTemp WAIT
+  TRY sBuf = Trim$(File.Load(sTemp))
+  TRY KILL sTemp
+  
+  TRY sCad = Split(sBuf, "\n", "", TRUE)
+  IF sCad.Count = 1 THEN
+    IF Exist(sCad[0]) THEN
+      sBuf = File.Load(sCad[0])
+      IF NOT ERROR THEN
+        sCad = Split(sBuf, "\n", "", TRUE)
+        FOR EACH sBuf IN sCad
+          sBuf = Trim(sBuf)
+
+          IF LCase(Left(sBuf, 5)) = "icon=" THEN
+            sIcon = Trim(Mid(sBuf, 6))
+          END IF
+
+          IF LCase(Left(sBuf, 8)) = "tryexec=" THEN
+            sTitle = Trim(Mid(sBuf, 9))
+          END IF
+
+          IF sTitle = "" THEN
+            IF LCase(Left(sBuf, 5)) = "exec=" THEN
+              sTitle = Trim(Mid(sBuf, 6))
+            END IF
+          END IF
+
+        NEXT
+      END IF
+    END IF
+  END IF
+
+  IF sIcon <> "" THEN
+   IF Left(sIcon, 1) = "/" THEN
+      IF NOT Exist(sIcon) THEN
+        IF NOT Exist(sIcon & ".png") THEN
+          sIcon = ""
+        ELSE
+          sIcon = sIcon & ".png"
+        END IF
+      END IF
+    ELSE
+      IF NOT Exist("/usr/share/pixmaps" &/ sIcon) THEN
+        IF NOT Exist("/usr/share/pixmaps" &/ sIcon & ".png") THEN
+          sIcon = ""
+        ELSE
+          sIcon = "/usr/share/pixmaps" &/ sIcon & ".png"
+        END IF
+      ELSE
+        sIcon = "/usr/share/pixmaps" &/ sIcon
+      END IF
+    END IF
+  END IF
+
+  sTemp = Temp$()
+
+  TRY SHELL "dpkg -L " & packageName & " | grep menu/" & packageName & " > " & sTemp WAIT
+  TRY sBuf = Trim$(File.Load(sTemp))
+  TRY KILL sTemp
+
+  TRY sCad = Split(sBuf, "\n", "", TRUE)
+  IF ERROR THEN RETURN 
+  IF sCad.Count > 1 THEN RETURN 
+
+  IF sCad.Count = 1 THEN
+
+    IF NOT Exist(sCad[0]) THEN RETURN
+    TRY sBuf = File.Load(sCad[0])
+    IF ERROR THEN RETURN 
+    IF InStr(sBuf, "command=") > 0 THEN
+      sTitle = Trim(Mid(sBuf, InStr(sBuf, "command=") + 8))
+      IF InStr(sTitle, " ") > 0 THEN sTitle = Trim(Left(sTitle, InStr(sTitle, " ") - 1))
+      IF InStr(sTitle, "\n") > 0 THEN sTitle = Trim(Left(sTitle, InStr(sTitle, "\n") - 1))
+      IF Left(sTitle, 1) = "\"" THEN sTitle = Mid(sTitle, 2)
+      IF InStr(sTitle, "\"") > 0 THEN sTitle = Left(sTitle, InStr(sTitle, "\"") - 1)
+      IF NOT Exist(sTitle) THEN sTitle = ""
+    END IF
+
+    IF sIcon = "" THEN
+      IF InStr(sBuf, "icon=") > 0 THEN
+        sIcon = Trim(Mid(sBuf, InStr(sBuf, "icon=") + 5))
+        IF InStr(sIcon, " ") > 0 THEN sIcon = Trim(Left(sIcon, InStr(sIcon, " ") - 1))
+        IF InStr(sIcon, "\n") > 0 THEN sIcon = Trim(Left(sIcon, InStr(sIcon, "\n") - 1))
+        IF Left(sIcon, 1) = "\"" THEN sIcon = Mid(sIcon, 2)
+        IF InStr(sIcon, "\"") > 0 THEN sIcon = Left(sIcon, InStr(sIcon, "\"") - 1)
+        IF NOT Exist(sIcon) THEN sIcon = ""
+      END IF
+    END IF
+
+    IF sTitle = "" THEN RETURN 
+    FExec.Run(packageName, sTitle, sIcon, GenUser)
+    RETURN 
+  END IF
+
+END

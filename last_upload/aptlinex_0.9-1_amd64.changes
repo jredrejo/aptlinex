@@ -1,0 +1,38 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.7
+Date: Mon, 24 Mar 2008 13:44:15 +0100
+Source: aptlinex
+Binary: aptlinex
+Architecture: source all
+Version: 0.9-1
+Distribution: unstable
+Urgency: low
+Maintainer: José L. Redrejo Rodríguez <jredrejo@debian.org>
+Changed-By: José L. Redrejo Rodríguez <jredrejo@debian.org>
+Description: 
+ aptlinex   - Web browser addon to install Debian packages with a click
+Closes: 470313
+Changes: 
+ aptlinex (0.9-1) unstable; urgency=low
+ .
+   * New version after relicensing from MIT to GPL
+   * Updated code to work with gambas 2.0
+   * Several code enhancements
+   * debian/postinst: added support for konqueror & opera
+   * Added several changes to the code to be fully KDE & Gnome compatible
+   * First oficial debian release (Closes: #470313)
+Files: 
+ 7c9416f45a782f4549860bd22b5408b6 624 utils optional aptlinex_0.9-1.dsc
+ 6f29776a5babe30686658442b212823c 128589 utils optional aptlinex_0.9.orig.tar.gz
+ 7708f37ad9d8675b5b2a43d1b5ad75a6 3948 utils optional aptlinex_0.9-1.diff.gz
+ d2bf27aa0563c26f698a45dc93201d5a 65842 utils optional aptlinex_0.9-1_all.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFH67kqmqVR2WapDeIRAibUAKCus07Q7CM0CJsDwtM5Q7ev+CozDgCgiRwO
+b6HPnPVRiAOTCrNUGTtfTkY=
+=4sdD
+-----END PGP SIGNATURE-----

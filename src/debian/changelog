@@ -1,0 +1,45 @@
+aptlinex (0.91-1) unstable; urgency=high
+
+  * New upstream release to fix several security bugs:
+  * Check if the package really exists before acting (Closes: #476572)
+  * Always uses Temp$() when creating temp files (Closes: #476588)
+  * It does not use lock files anymore
+  * Now apt:foo uris are also accepted (Closes: #476590)
+
+ -- José L. Redrejo Rodríguez <jredrejo@debian.org>  Sat, 19 Apr 2008 14:27:58 +0200
+
+aptlinex (0.9-1) unstable; urgency=low
+
+  * New version after relicensing from MIT to GPL
+  * Updated code to work with gambas 2.0
+  * Several code enhancements
+  * debian/postinst: added support for konqueror & opera
+  * Added several changes to the code to be fully KDE & Gnome compatible
+  * First oficial debian release (Closes: #470313)
+
+ -- José L. Redrejo Rodríguez <jredrejo@debian.org>  Mon, 24 Mar 2008 13:44:15 +0100
+
+aptlinex (0.8-2) unstable; urgency=low
+
+  * Rebuilt for new gambas version >> 1.9.43
+
+ -- José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>  Thu, 28 Dec 2006 21:42:33 +0200
+
+aptlinex (0.8-1) unstable; urgency=low
+
+  * If some index repository fails, the process continues
+
+ -- José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>  Wed, 18 Oct 2006 21:42:33 +0200
+
+aptlinex (0.7-1) unstable; urgency=low
+
+  * Use autoconf to avoid questions when installing packages
+
+ -- José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>  Fri, 2 Jun 2006 21:42:33 +0200
+
+
+aptlinex (0.6-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- José L. Redrejo Rodríguez <jredrejo@edu.juntaextremadura.net>  Tue, 9 May 2006 10:42:33 +0200
